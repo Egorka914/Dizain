@@ -1,0 +1,2630 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="description" content="КДАСТР — премиальные кадастровые работы, геодезия и дизайн. 12+ лет опыта, 4800+ проектов. Гарантия 3 года.">
+    <meta name="theme-color" content="#1C1C1C">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>КДАСТР | Премиальные кадастровые работы и дизайн</title>
+
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800;14..32,900&display=swap" rel="stylesheet">
+
+    <style>
+        /* ============================================================
+           RESET & BASE
+           ============================================================ */
+        *, *::before, *::after {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            /* Палитра по образцу заказчика */
+            --white: #FFFFFF;
+            --light-gray: #D3D3D3;
+            --mid-gray: #808080;
+            --dark-gray: #333333;
+
+            /* Производные */
+            --dark-deep: #1C1C1C;
+            --dark-card: #2A2A2A;
+            --dark-soft: #3D3D3D;
+
+            --transition: cubic-bezier(0.23, 1, 0.32, 1);
+            --transition-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            /* Safe-area для iPhone с вырезом */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+        }
+
+        html {
+            scroll-behavior: smooth;
+            background-color: var(--dark-deep);
+            -webkit-text-size-adjust: 100%;
+            /* Фикс для iOS Safari при скролле */
+            overscroll-behavior-y: none;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background-color: var(--dark-deep);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            cursor: none;
+            /* Отступ под iPhone safe-area */
+            padding-top: var(--safe-top);
+            padding-left: var(--safe-left);
+            padding-right: var(--safe-right);
+            /* Фикс для 100vh на мобильных */
+            min-height: 100vh;
+            min-height: -webkit-fill-available;
+        }
+
+        /* Fallback для touch устройств */
+        @media (hover: none), (pointer: coarse) {
+            body { cursor: auto; }
+            .cursor-dot, .cursor-ring { display: none !important; }
+        }
+
+        body.no-js { cursor: auto; }
+        body.no-js .cursor-dot, body.no-js .cursor-ring { display: none; }
+
+        /* ============================================================
+           КАСТОМНЫЙ КУРСОР (только desktop)
+           ============================================================ */
+        .cursor-dot, .cursor-ring {
+            position: fixed;
+            top: 0; left: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            transform: translate(-50%, -50%);
+            will-change: transform;
+        }
+        .cursor-dot {
+            width: 6px; height: 6px;
+            background: var(--white);
+            mix-blend-mode: difference;
+            transition: width 0.25s var(--transition), height 0.25s var(--transition);
+        }
+        .cursor-ring {
+            width: 40px; height: 40px;
+            border: 1.5px solid rgba(255,255,255,0.5);
+            mix-blend-mode: difference;
+            transition: width 0.3s var(--transition), height 0.3s var(--transition), border-color 0.3s;
+        }
+        body.cursor-hover .cursor-ring { width: 80px; height: 80px; border-color: var(--white); }
+        body.cursor-hover .cursor-dot { width: 12px; height: 12px; }
+
+        /* ============================================================
+           SCROLLBAR
+           ============================================================ */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: var(--dark-deep); }
+        ::-webkit-scrollbar-thumb { background: var(--mid-gray); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--light-gray); }
+
+        /* ============================================================
+           SCROLL PROGRESS
+           ============================================================ */
+        .scroll-progress {
+            position: fixed;
+            top: 0; left: 0;
+            height: 3px;
+            width: 0%;
+            background: linear-gradient(90deg, var(--white), var(--mid-gray));
+            z-index: 9998;
+            transition: width 0.1s linear;
+            box-shadow: 0 0 20px rgba(255,255,255,0.6);
+            pointer-events: none;
+        }
+
+        /* ============================================================
+           BACKGROUND
+           ============================================================ */
+        #particle-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.55;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 50%; left: 50%;
+            width: 900px; height: 900px;
+            background: radial-gradient(circle, rgba(255,255,255,0.07) 0%, transparent 60%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 1;
+            transition: transform 0.8s var(--transition);
+            will-change: transform;
+        }
+
+        /* ============================================================
+           BOOTSTRAP OVERRIDE — контейнер под палитру
+           ============================================================ */
+        .container-fluid.custom-container {
+            max-width: 1440px;
+            padding-left: max(16px, var(--safe-left));
+            padding-right: max(16px, var(--safe-right));
+        }
+
+        /* ============================================================
+           NAVBAR
+           ============================================================ */
+        .navbar-custom {
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(211, 211, 211, 0.1);
+            animation: fadeDown 1s var(--transition) forwards;
+            opacity: 0;
+            transform: translateY(-16px);
+            position: relative;
+            z-index: 100;
+            background: transparent;
+        }
+
+        @keyframes fadeDown { to { opacity: 1; transform: translateY(0); } }
+
+        .logo {
+            font-size: clamp(20px, 2.2vw, 28px);
+            font-weight: 900;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--white);
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+            user-select: none;
+        }
+        .logo span { color: var(--mid-gray); font-weight: 300; }
+        .logo::after {
+            content: '';
+            position: absolute;
+            bottom: -6px; left: 0;
+            width: 0%; height: 2px;
+            background: linear-gradient(90deg, var(--white), var(--mid-gray));
+            transition: width 0.7s var(--transition);
+        }
+        .logo:hover::after { width: 100%; }
+        .logo:hover { color: var(--white); }
+
+        .nav-menu-desktop {
+            display: flex;
+            gap: clamp(16px, 3vw, 44px);
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .nav-menu-desktop a {
+            text-decoration: none;
+            color: var(--mid-gray);
+            font-weight: 500;
+            font-size: clamp(13px, 1.1vw, 15px);
+            letter-spacing: 0.6px;
+            transition: color 0.3s;
+            position: relative;
+            padding-bottom: 6px;
+        }
+        .nav-menu-desktop a::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 0; height: 1.5px;
+            background: var(--white);
+            transition: width 0.5s var(--transition);
+        }
+        .nav-menu-desktop a:hover { color: var(--white); }
+        .nav-menu-desktop a:hover::after { width: 100%; }
+
+        .nav-phone-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: clamp(13px, 1.1vw, 15px);
+            padding: 10px 20px;
+            border: 1px solid rgba(211, 211, 211, 0.2);
+            border-radius: 50px;
+            transition: all 0.4s var(--transition);
+            white-space: nowrap;
+        }
+        .nav-phone-btn i { font-size: 13px; color: var(--white); }
+        .nav-phone-btn:hover {
+            background: var(--white);
+            color: var(--dark-deep);
+            border-color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(255,255,255,0.4);
+        }
+        .nav-phone-btn:hover i { color: var(--dark-deep); }
+
+        /* Кнопка бургер-меню */
+        .btn-burger {
+            background: none;
+            border: 1px solid rgba(211,211,211,0.2);
+            border-radius: 12px;
+            width: 46px;
+            height: 46px;
+            color: var(--white);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-burger:hover, .btn-burger:focus-visible {
+            background: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.4);
+            outline: none;
+        }
+
+        /* ============================================================
+           MOBILE MENU OFFCANVAS
+           ============================================================ */
+        .offcanvas-mobile {
+            background: rgba(20, 20, 20, 0.98) !important;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            color: var(--white);
+            border-left: 1px solid rgba(211,211,211,0.12) !important;
+            width: min(340px, 88vw) !important;
+        }
+        .offcanvas-mobile .offcanvas-header {
+            border-bottom: 1px solid rgba(211,211,211,0.08);
+            padding: 22px 24px;
+        }
+        .offcanvas-mobile .btn-close {
+            filter: invert(1);
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        .offcanvas-mobile .btn-close:hover { opacity: 1; }
+        .offcanvas-mobile .offcanvas-body {
+            padding: 24px;
+        }
+        .offcanvas-mobile .mobile-nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 0;
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 17px;
+            border-bottom: 1px solid rgba(211,211,211,0.08);
+            transition: all 0.35s var(--transition);
+        }
+        .offcanvas-mobile .mobile-nav-link i {
+            color: var(--mid-gray);
+            font-size: 14px;
+            transition: transform 0.35s var(--transition), color 0.3s;
+        }
+        .offcanvas-mobile .mobile-nav-link:hover,
+        .offcanvas-mobile .mobile-nav-link:active {
+            color: var(--white);
+            padding-left: 8px;
+        }
+        .offcanvas-mobile .mobile-nav-link:hover i {
+            color: var(--white);
+            transform: translateX(4px);
+        }
+        .offcanvas-mobile .mobile-contact {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(211,211,211,0.08);
+        }
+        .offcanvas-mobile .mobile-phone {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(211,211,211,0.12);
+            border-radius: 16px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.35s var(--transition);
+            margin-bottom: 12px;
+        }
+        .offcanvas-mobile .mobile-phone:hover {
+            background: var(--white);
+            color: var(--dark-deep);
+            border-color: var(--white);
+        }
+        .offcanvas-mobile .mobile-phone i { color: var(--white); transition: color 0.3s; }
+        .offcanvas-mobile .mobile-phone:hover i { color: var(--dark-deep); }
+
+        .offcanvas-mobile .mobile-social {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        .offcanvas-mobile .mobile-social a {
+            width: 44px; height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid rgba(211,211,211,0.15);
+            color: var(--mid-gray);
+            text-decoration: none;
+            transition: all 0.35s var(--transition);
+            font-size: 16px;
+        }
+        .offcanvas-mobile .mobile-social a:hover {
+            color: var(--dark-deep);
+            background: var(--white);
+            border-color: var(--white);
+            transform: translateY(-3px);
+        }
+
+        /* ============================================================
+           HERO
+           ============================================================ */
+        .hero {
+            min-height: 88vh;
+            padding: 60px 0 80px;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        @media (max-width: 991px) {
+            .hero { min-height: auto; padding: 30px 0 50px; }
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            font-size: clamp(10px, 1vw, 13px);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            color: var(--light-gray);
+            margin-bottom: 28px;
+            border-left: 3px solid var(--white);
+            padding-left: 16px;
+            animation: fadeUp 1s 0.2s var(--transition) forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .hero-badge::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--white);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+            flex-shrink: 0;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(1.4); }
+        }
+
+        .hero h1 {
+            font-size: clamp(36px, 7vw, 100px);
+            font-weight: 800;
+            line-height: 1.02;
+            letter-spacing: -0.04em;
+            margin-bottom: 24px;
+            animation: fadeUp 1.2s 0.35s var(--transition) forwards;
+            opacity: 0;
+            transform: translateY(40px);
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        .hero h1 .accent {
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--light-gray);
+            font-weight: 300;
+            display: block;
+            font-size: 0.6em;
+            letter-spacing: 5px;
+            margin-top: 14px;
+        }
+
+        .hero-desc {
+            font-size: clamp(14px, 1.3vw, 18px);
+            color: var(--light-gray);
+            max-width: 580px;
+            margin-bottom: 38px;
+            font-weight: 300;
+            line-height: 1.8;
+            animation: fadeUp 1.2s 0.5s var(--transition) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 16px;
+            animation: fadeUp 1.2s 0.65s var(--transition) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+            flex-wrap: wrap;
+        }
+
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* HERO STATS */
+        .hero-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            perspective: 1000px;
+        }
+
+        @media (max-width: 991px) {
+            .hero-stats {
+                flex-direction: row;
+                flex-wrap: wrap;
+                margin-top: 40px;
+            }
+            .hero-stats .stat-card { flex: 1 1 calc(50% - 8px); min-width: 140px; }
+        }
+
+        @media (max-width: 480px) {
+            .hero-stats { flex-direction: column; }
+            .hero-stats .stat-card { flex: 1 1 100%; }
+        }
+
+        .stat-card {
+            background: rgba(51, 51, 51, 0.55);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(211, 211, 211, 0.12);
+            border-radius: 22px;
+            padding: clamp(20px, 2.5vw, 28px) clamp(20px, 2.5vw, 30px);
+            transition: all 0.6s var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: -50%; right: -50%;
+            width: 200%; height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(255,255,255,0.1), transparent 30%);
+            animation: rotate 6s linear infinite;
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .stat-card:hover::before { opacity: 1; }
+        @keyframes rotate { to { transform: rotate(360deg); } }
+
+        .stat-card:hover {
+            border-color: rgba(255,255,255,0.35);
+            background: rgba(51, 51, 51, 0.8);
+            box-shadow: 0 30px 60px -20px rgba(0,0,0,0.9);
+        }
+
+        .stat-number {
+            font-size: clamp(28px, 3vw, 44px);
+            font-weight: 800;
+            color: var(--white);
+            line-height: 1;
+            margin-bottom: 6px;
+            letter-spacing: -0.03em;
+            position: relative;
+            z-index: 1;
+        }
+        .stat-label {
+            font-size: clamp(11.5px, 1vw, 14px);
+            color: var(--light-gray);
+            font-weight: 400;
+            letter-spacing: 0.4px;
+            position: relative;
+            z-index: 1;
+            line-height: 1.4;
+        }
+
+        /* ============================================================
+           MARQUEE
+           ============================================================ */
+        .marquee {
+            overflow: hidden;
+            white-space: nowrap;
+            padding: 28px 0;
+            border-top: 1px solid rgba(211, 211, 211, 0.1);
+            border-bottom: 1px solid rgba(211, 211, 211, 0.1);
+            margin: 20px 0 clamp(50px, 8vw, 100px);
+            opacity: 0;
+            animation: fadeIn 1.2s 1s var(--transition) forwards;
+            position: relative;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .marquee::before, .marquee::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: clamp(50px, 10vw, 200px);
+            height: 100%;
+            z-index: 2;
+            pointer-events: none;
+        }
+        .marquee::before { left: 0; background: linear-gradient(90deg, var(--dark-deep), transparent); }
+        .marquee::after { right: 0; background: linear-gradient(270deg, var(--dark-deep), transparent); }
+
+        .marquee-content {
+            display: inline-block;
+            animation: marquee 45s linear infinite;
+            will-change: transform;
+        }
+        .marquee-item {
+            display: inline-block;
+            font-size: clamp(14px, 1.8vw, 26px);
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            color: var(--mid-gray);
+            margin: 0 clamp(20px, 3vw, 48px);
+        }
+        .marquee-item i {
+            margin-right: 16px;
+            color: var(--white);
+            font-size: 12px;
+            opacity: 0.7;
+        }
+
+        @keyframes marquee {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ============================================================
+           SECTIONS
+           ============================================================ */
+        section {
+            padding: clamp(50px, 8vw, 110px) 0;
+            position: relative;
+        }
+
+        .section-header {
+            margin-bottom: clamp(36px, 5vw, 70px);
+        }
+
+        .section-tag {
+            display: inline-block;
+            font-size: 11px;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            color: var(--mid-gray);
+            margin-bottom: 18px;
+            font-weight: 600;
+            position: relative;
+            padding-left: 28px;
+        }
+        .section-tag::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 0;
+            width: 18px; height: 1px;
+            background: var(--mid-gray);
+        }
+
+        .section-title {
+            font-size: clamp(26px, 4.5vw, 62px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.1;
+            color: var(--white);
+            margin-bottom: 16px;
+        }
+        .section-title .thin {
+            font-weight: 300;
+            color: transparent;
+            -webkit-text-stroke: 1px var(--mid-gray);
+        }
+
+        .section-desc {
+            font-size: clamp(14px, 1.2vw, 17px);
+            color: var(--light-gray);
+            font-weight: 300;
+            line-height: 1.8;
+            opacity: 0.9;
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.9s var(--transition), transform 0.9s var(--transition);
+            will-change: opacity, transform;
+        }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+
+        /* ============================================================
+           BUTTONS
+           ============================================================ */
+        .btn-custom {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: clamp(14px, 1.5vw, 18px) clamp(26px, 3vw, 42px);
+            border-radius: 60px;
+            font-weight: 600;
+            font-size: clamp(14px, 1.1vw, 16px);
+            text-decoration: none;
+            transition: all 0.5s var(--transition-bounce);
+            border: 1.5px solid transparent;
+            background: transparent;
+            color: var(--white);
+            letter-spacing: 0.4px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            will-change: transform;
+            line-height: 1.2;
+            cursor: none;
+        }
+        .btn-custom::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            pointer-events: none;
+        }
+        .btn-custom:hover::before { width: 400px; height: 400px; }
+        .btn-custom > * { position: relative; z-index: 1; }
+
+        .btn-custom-primary {
+            background: var(--white);
+            color: var(--dark-deep);
+            border-color: var(--white);
+            box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
+            animation: btnPulse 3s infinite;
+        }
+        @keyframes btnPulse {
+            0% { box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+            70% { box-shadow: 0 0 0 20px rgba(255,255,255,0); }
+            100% { box-shadow: 0 0 0 0 rgba(255,255,255,0); }
+        }
+        .btn-custom-primary:hover {
+            transform: translateY(-4px) scale(1.03);
+            box-shadow: 0 20px 50px -15px rgba(255,255,255,0.5);
+            color: var(--dark-deep);
+        }
+
+        .btn-custom-outline {
+            border-color: rgba(211, 211, 211, 0.4);
+            color: var(--light-gray);
+        }
+        .btn-custom-outline:hover {
+            border-color: var(--white);
+            color: var(--white);
+            transform: translateY(-4px) scale(1.03);
+            background: rgba(255,255,255,0.05);
+        }
+
+        .btn-custom:focus-visible {
+            outline: 2px solid var(--white);
+            outline-offset: 4px;
+        }
+
+        /* ============================================================
+           SERVICE CARDS
+           ============================================================ */
+        .service-card {
+            background: rgba(51, 51, 51, 0.4);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(211, 211, 211, 0.1);
+            border-radius: 24px;
+            padding: clamp(26px, 3vw, 42px) clamp(22px, 2.5vw, 34px) clamp(24px, 3vw, 36px);
+            transition: all 0.6s var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, var(--white), var(--mid-gray));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.7s var(--transition);
+        }
+        .service-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at var(--mx, 50%) var(--my, 50%), rgba(255,255,255,0.08), transparent 40%);
+            opacity: 0;
+            transition: opacity 0.4s;
+            pointer-events: none;
+        }
+        .service-card:hover::before { transform: scaleX(1); }
+        .service-card:hover::after { opacity: 1; }
+        .service-card:hover {
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 40px 70px -30px rgba(0,0,0,0.95);
+            background: rgba(51, 51, 51, 0.7);
+        }
+
+        .service-icon {
+            font-size: 30px;
+            color: var(--white);
+            margin-bottom: 22px;
+            transition: transform 0.6s var(--transition-bounce);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px;
+            background: rgba(211, 211, 211, 0.08);
+            border: 1px solid rgba(211, 211, 211, 0.12);
+            flex-shrink: 0;
+        }
+        .service-card:hover .service-icon {
+            transform: scale(1.12) rotate(-6deg);
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.4);
+        }
+
+        .service-card h3 {
+            font-size: clamp(17px, 1.6vw, 22px);
+            font-weight: 700;
+            margin-bottom: 12px;
+            color: var(--white);
+            letter-spacing: -0.02em;
+        }
+        .service-card p {
+            color: var(--light-gray);
+            font-weight: 300;
+            font-size: clamp(13.5px, 1vw, 15px);
+            line-height: 1.75;
+            opacity: 0.85;
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .service-price {
+            margin-top: 22px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(211, 211, 211, 0.12);
+            font-size: 14px;
+            color: var(--mid-gray);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .service-price strong {
+            color: var(--white);
+            font-weight: 700;
+            font-size: clamp(16px, 1.4vw, 20px);
+            white-space: nowrap;
+        }
+
+        /* ============================================================
+           PROCESS
+           ============================================================ */
+        .process-step {
+            background: rgba(51, 51, 51, 0.35);
+            border: 1px solid rgba(211, 211, 211, 0.1);
+            border-radius: 22px;
+            padding: clamp(28px, 3vw, 38px) clamp(20px, 2vw, 28px);
+            transition: all 0.55s var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+            counter-increment: step;
+        }
+        .process-step::before {
+            content: "0" counter(step);
+            font-size: clamp(46px, 5vw, 68px);
+            font-weight: 900;
+            color: rgba(211, 211, 211, 0.08);
+            position: absolute;
+            top: 8px; right: 16px;
+            line-height: 1;
+            letter-spacing: -3px;
+            transition: color 0.4s;
+        }
+        .process-step::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%; height: 2px;
+            background: var(--white);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.6s var(--transition);
+        }
+        .process-step:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        .process-step:hover {
+            border-color: rgba(255,255,255,0.3);
+            background: rgba(51, 51, 51, 0.65);
+            transform: translateY(-8px);
+        }
+        .process-step:hover::before { color: rgba(255,255,255,0.15); }
+
+        .process-step h4 {
+            font-size: clamp(15px, 1.4vw, 19px);
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--white);
+            position: relative;
+            z-index: 1;
+            letter-spacing: -0.02em;
+        }
+        .process-step p {
+            font-size: clamp(13px, 1vw, 14.5px);
+            color: var(--light-gray);
+            font-weight: 300;
+            line-height: 1.7;
+            opacity: 0.85;
+            position: relative;
+            z-index: 1;
+            margin-bottom: 0;
+        }
+
+        /* ============================================================
+           ADVANTAGES
+           ============================================================ */
+        .advantages-left p {
+            color: var(--light-gray);
+            font-weight: 300;
+            font-size: clamp(14.5px, 1.2vw, 17px);
+            line-height: 1.85;
+            opacity: 0.9;
+            margin-bottom: 36px;
+        }
+
+        .adv-item {
+            display: flex;
+            gap: clamp(16px, 2vw, 24px);
+            align-items: flex-start;
+            padding: clamp(20px, 2.5vw, 28px) clamp(20px, 2.5vw, 32px);
+            background: rgba(51, 51, 51, 0.35);
+            border: 1px solid rgba(211, 211, 211, 0.1);
+            border-radius: 20px;
+            transition: all 0.55s var(--transition);
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 16px;
+        }
+        .adv-item::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 0;
+            width: 3px; height: 100%;
+            background: var(--white);
+            transform: scaleY(0);
+            transform-origin: bottom;
+            transition: transform 0.5s var(--transition);
+        }
+        .adv-item:hover::before {
+            transform: scaleY(1);
+            transform-origin: top;
+        }
+        .adv-item:hover {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(51, 51, 51, 0.65);
+            transform: translateX(8px);
+        }
+
+        .adv-num {
+            font-size: clamp(28px, 3vw, 42px);
+            font-weight: 800;
+            color: var(--mid-gray);
+            line-height: 1;
+            min-width: 56px;
+            transition: color 0.4s, transform 0.4s;
+            letter-spacing: -0.04em;
+            flex-shrink: 0;
+        }
+        .adv-item:hover .adv-num {
+            color: var(--white);
+            transform: scale(1.08);
+        }
+
+        .adv-body h4 {
+            font-size: clamp(15px, 1.4vw, 19px);
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: var(--white);
+            letter-spacing: -0.02em;
+        }
+        .adv-body p {
+            color: var(--light-gray);
+            font-weight: 300;
+            font-size: clamp(13px, 1vw, 14.5px);
+            line-height: 1.7;
+            opacity: 0.85;
+            margin: 0;
+        }
+
+        /* ============================================================
+           PORTFOLIO
+           ============================================================ */
+        .portfolio-item {
+            border-radius: 22px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 4/3;
+            background: var(--dark-card);
+            cursor: none;
+            transition: all 0.6s var(--transition);
+            border: 1px solid rgba(211, 211, 211, 0.1);
+            height: 100%;
+        }
+        .portfolio-item:hover {
+            transform: scale(1.02);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 40px 70px -25px rgba(0,0,0,0.9);
+        }
+
+        .portfolio-inner {
+            width: 100%; height: 100%;
+            display: flex;
+            align-items: flex-end;
+            padding: clamp(18px, 2.5vw, 28px);
+            background: linear-gradient(to top, rgba(28,28,28,0.98) 0%, rgba(28,28,28,0.4) 50%, rgba(28,28,28,0.1) 100%);
+            transition: background 0.5s;
+            position: relative;
+            z-index: 2;
+        }
+        .portfolio-item:hover .portfolio-inner {
+            background: linear-gradient(to top, rgba(28,28,28,1) 0%, rgba(28,28,28,0.5) 60%, rgba(28,28,28,0.2) 100%);
+        }
+
+        .portfolio-content h4 {
+            font-size: clamp(15px, 1.3vw, 18px);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 4px;
+            letter-spacing: -0.02em;
+        }
+        .portfolio-content span {
+            font-size: clamp(11.5px, 0.95vw, 13px);
+            color: var(--light-gray);
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            opacity: 0.9;
+        }
+
+        .portfolio-bg {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 1;
+            opacity: 0.5;
+            background-size: cover;
+            background-position: center;
+            transition: opacity 0.6s, transform 0.8s var(--transition);
+        }
+        .portfolio-item:hover .portfolio-bg {
+            opacity: 0.75;
+            transform: scale(1.08);
+        }
+
+        /* ============================================================
+           TESTIMONIALS
+           ============================================================ */
+        .testimonial {
+            background: rgba(51, 51, 51, 0.35);
+            border: 1px solid rgba(211, 211, 211, 0.1);
+            border-radius: 22px;
+            padding: clamp(24px, 3vw, 36px) clamp(20px, 2.5vw, 30px);
+            transition: all 0.55s var(--transition);
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+        .testimonial::before {
+            content: '"';
+            position: absolute;
+            top: 16px; right: 24px;
+            font-size: clamp(70px, 8vw, 110px);
+            font-weight: 900;
+            color: rgba(211, 211, 211, 0.06);
+            line-height: 1;
+            font-family: Georgia, serif;
+        }
+        .testimonial:hover {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(51, 51, 51, 0.6);
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px -25px rgba(0,0,0,0.8);
+        }
+
+        .testimonial-stars {
+            color: var(--white);
+            font-size: 14px;
+            margin-bottom: 18px;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+        }
+        .testimonial-text {
+            font-size: clamp(13.5px, 1.1vw, 15px);
+            color: var(--light-gray);
+            font-weight: 300;
+            line-height: 1.85;
+            opacity: 0.9;
+            margin-bottom: 22px;
+            position: relative;
+            z-index: 1;
+        }
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        .testimonial-avatar {
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--dark-soft), var(--dark-card));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 14px;
+            color: var(--white);
+            border: 1.5px solid rgba(211, 211, 211, 0.2);
+            transition: transform 0.4s var(--transition-bounce), border-color 0.3s;
+            flex-shrink: 0;
+        }
+        .testimonial:hover .testimonial-avatar {
+            transform: scale(1.08) rotate(-5deg);
+            border-color: var(--white);
+        }
+        .testimonial-author-info h5 {
+            font-size: clamp(13.5px, 1.1vw, 15px);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 2px;
+        }
+        .testimonial-author-info span {
+            font-size: clamp(11px, 0.9vw, 12.5px);
+            color: var(--mid-gray);
+            font-weight: 400;
+        }
+
+        /* ============================================================
+           FAQ
+           ============================================================ */
+        .faq-item {
+            background: rgba(51, 51, 51, 0.35);
+            border: 1px solid rgba(211, 211, 211, 0.1);
+            border-radius: 20px;
+            padding: clamp(20px, 2.5vw, 28px) clamp(20px, 2.5vw, 32px);
+            cursor: none;
+            transition: all 0.45s var(--transition);
+            height: 100%;
+        }
+        .faq-item:hover {
+            border-color: rgba(255,255,255,0.25);
+            background: rgba(51, 51, 51, 0.55);
+            transform: translateY(-3px);
+        }
+        .faq-item.open {
+            border-color: rgba(255,255,255,0.35);
+            background: rgba(51, 51, 51, 0.6);
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .faq-question h4 {
+            font-size: clamp(14px, 1.2vw, 16.5px);
+            font-weight: 600;
+            color: var(--white);
+            line-height: 1.5;
+            letter-spacing: -0.01em;
+            margin: 0;
+        }
+        .faq-question i {
+            color: var(--mid-gray);
+            font-size: 12px;
+            transition: transform 0.5s var(--transition-bounce), color 0.3s, background 0.3s, border-color 0.3s;
+            flex-shrink: 0;
+            width: 30px; height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid rgba(211, 211, 211, 0.2);
+        }
+        .faq-item.open .faq-question i {
+            transform: rotate(135deg);
+            color: var(--white);
+            border-color: var(--white);
+            background: rgba(255,255,255,0.1);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.6s var(--transition), margin 0.4s;
+        }
+        .faq-item.open .faq-answer {
+            max-height: 400px;
+            margin-top: 14px;
+        }
+        .faq-answer p {
+            font-size: clamp(13px, 1vw, 14.5px);
+            color: var(--light-gray);
+            font-weight: 300;
+            line-height: 1.8;
+            opacity: 0.9;
+            margin: 0;
+        }
+
+        /* ============================================================
+           CTA
+           ============================================================ */
+        .cta-section {
+            padding: clamp(70px, 10vw, 130px) 0;
+            text-align: center;
+            border-top: 1px solid rgba(211, 211, 211, 0.1);
+            border-bottom: 1px solid rgba(211, 211, 211, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            width: min(600px, 90vw);
+            height: min(600px, 90vw);
+            background: radial-gradient(circle, rgba(255,255,255,0.08), transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: breathe 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        @keyframes breathe {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.6; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+        }
+        .cta-section h2 {
+            font-size: clamp(30px, 6vw, 84px);
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            margin-bottom: 20px;
+            color: var(--white);
+            line-height: 1.05;
+            position: relative;
+            z-index: 1;
+        }
+        .cta-section h2 .thin {
+            font-weight: 300;
+            color: transparent;
+            -webkit-text-stroke: 1.5px var(--mid-gray);
+        }
+        .cta-section p {
+            font-size: clamp(14px, 1.2vw, 17px);
+            color: var(--light-gray);
+            margin-bottom: 40px;
+            font-weight: 300;
+            max-width: 520px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.7;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* ============================================================
+           CONTACT
+           ============================================================ */
+        .contact-info h3 {
+            font-size: clamp(22px, 2.5vw, 32px);
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 18px;
+            color: var(--white);
+        }
+        .contact-info > p {
+            color: var(--light-gray);
+            font-weight: 300;
+            font-size: clamp(14px, 1.1vw, 16px);
+            line-height: 1.8;
+            opacity: 0.9;
+            margin-bottom: 32px;
+        }
+        .contact-detail {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(211, 211, 211, 0.1);
+            transition: padding-left 0.4s var(--transition);
+            text-decoration: none;
+            color: inherit;
+        }
+        .contact-detail:hover { padding-left: 10px; }
+        .contact-detail i {
+            width: 44px; height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            background: rgba(211, 211, 211, 0.08);
+            border: 1px solid rgba(211, 211, 211, 0.12);
+            color: var(--white);
+            font-size: 15px;
+            flex-shrink: 0;
+            transition: all 0.4s var(--transition);
+        }
+        .contact-detail:hover i {
+            background: var(--white);
+            color: var(--dark-deep);
+            border-color: var(--white);
+            transform: scale(1.06) rotate(-5deg);
+        }
+        .contact-detail-text h5 {
+            font-size: clamp(13.5px, 1.1vw, 15.5px);
+            font-weight: 700;
+            color: var(--white);
+            margin-bottom: 2px;
+            word-break: break-word;
+        }
+        .contact-detail-text span {
+            font-size: clamp(11.5px, 1vw, 13.5px);
+            color: var(--mid-gray);
+            font-weight: 400;
+        }
+
+        .contact-form {
+            background: rgba(51, 51, 51, 0.5);
+            border: 1px solid rgba(211, 211, 211, 0.12);
+            border-radius: 24px;
+            padding: clamp(24px, 3vw, 42px) clamp(20px, 3vw, 38px);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+        .contact-form::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 3px;
+            background: linear-gradient(90deg, transparent, var(--white), transparent);
+            animation: shimmer 3s infinite;
+        }
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+        .contact-form h4 {
+            font-size: clamp(17px, 1.6vw, 22px);
+            font-weight: 700;
+            margin-bottom: 24px;
+            color: var(--white);
+        }
+
+        .form-label-custom {
+            display: block;
+            font-size: 12.5px;
+            color: var(--light-gray);
+            margin-bottom: 8px;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+        }
+        .form-control-custom {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(28, 28, 28, 0.7);
+            border: 1px solid rgba(211, 211, 211, 0.12);
+            border-radius: 14px;
+            color: var(--white);
+            font-family: inherit;
+            font-size: 15px;
+            font-weight: 400;
+            transition: border-color 0.35s var(--transition), background 0.35s, transform 0.35s, box-shadow 0.35s;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            /* Увеличиваем min-height для iOS чтобы не было зума */
+            min-height: 50px;
+        }
+        .form-control-custom:focus {
+            border-color: rgba(255,255,255,0.5);
+            background: rgba(28, 28, 28, 0.9);
+            box-shadow: 0 0 0 4px rgba(255,255,255,0.05);
+            transform: translateY(-2px);
+        }
+        .form-control-custom::placeholder { color: var(--mid-gray); }
+        textarea.form-control-custom {
+            resize: vertical;
+            min-height: 100px;
+            padding-top: 14px;
+        }
+        select.form-control-custom option {
+            background: var(--dark-deep);
+            color: var(--white);
+        }
+
+        /* ============================================================
+           FOOTER
+           ============================================================ */
+        .footer {
+            padding: clamp(28px, 4vw, 46px) 0 calc(28px + var(--safe-bottom));
+            border-top: 1px solid rgba(211, 211, 211, 0.1);
+            color: var(--mid-gray);
+            font-weight: 400;
+            font-size: 14px;
+            letter-spacing: 0.4px;
+        }
+        .footer-logo {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: var(--white);
+            text-transform: uppercase;
+        }
+        .footer-logo span { color: var(--mid-gray); font-weight: 300; }
+        .footer-copy { color: var(--mid-gray); font-size: 13px; }
+
+        .footer-social a {
+            color: var(--mid-gray);
+            font-size: 16px;
+            transition: all 0.4s var(--transition-bounce);
+            width: 42px; height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 1px solid rgba(211, 211, 211, 0.12);
+            text-decoration: none;
+        }
+        .footer-social a:hover {
+            color: var(--dark-deep);
+            border-color: var(--white);
+            background: var(--white);
+            transform: translateY(-4px) scale(1.08);
+            box-shadow: 0 15px 30px -10px rgba(255,255,255,0.4);
+        }
+
+        /* ============================================================
+           ПРИНУДИТЕЛЬНАЯ ПЕРЕКРАСКА ИКОНОК СОЦСЕТЕЙ
+           ============================================================ */
+        .fa-telegram-plane,
+        .fa-whatsapp,
+        .fa-instagram,
+        .fa-vk,
+        .fa-youtube {
+            color: inherit !important;
+        }
+
+        /* ============================================================
+           REDUCED MOTION
+           ============================================================ */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            .marquee-content { animation: none; }
+            .bg-glow, #particle-canvas { display: none; }
+            .cursor-dot, .cursor-ring { display: none; }
+            body { cursor: auto; }
+            .reveal { opacity: 1; transform: none; }
+        }
+
+        /* ============================================================
+           PRINT
+           ============================================================ */
+        @media print {
+            .cursor-dot, .cursor-ring, #particle-canvas, .bg-glow,
+            .scroll-progress, .marquee, .btn-burger { display: none; }
+            body { background: white; color: black; cursor: auto; }
+        }
+
+        /* ============================================================
+           iOS SAFARI FIXES
+           ============================================================ */
+        /* Фикс зума при фокусе на input */
+        @media screen and (max-width: 767px) {
+            input, select, textarea { font-size: 16px !important; }
+        }
+        /* Фикс 100vh для мобильных */
+        .hero {
+            min-height: 88vh;
+            min-height: calc(100vh - 100px);
+        }
+        @media (max-width: 991px) {
+            .hero { min-height: auto; }
+        }
+    </style>
+</head>
+<body class="no-js">
+    <!-- CURSOR -->
+    <div class="cursor-ring" aria-hidden="true"></div>
+    <div class="cursor-dot" aria-hidden="true"></div>
+
+    <!-- SCROLL PROGRESS -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
+    <!-- BACKGROUND -->
+    <div class="bg-glow" aria-hidden="true"></div>
+    <canvas id="particle-canvas" aria-hidden="true"></canvas>
+
+    <!-- ============================================================
+         NAVBAR
+         ============================================================ -->
+    <nav class="navbar-custom" aria-label="Главная навигация">
+        <div class="container-fluid custom-container">
+            <div class="d-flex align-items-center justify-content-between gap-2">
+                <!-- Логотип -->
+                <a href="#" class="logo flex-shrink-0">КД<span>АСТР</span></a>
+
+                <!-- Desktop меню -->
+                <ul class="nav-menu-desktop d-none d-lg-flex mb-0">
+                    <li><a href="#services">Услуги</a></li>
+                    <li><a href="#process">Процесс</a></li>
+                    <li><a href="#portfolio">Проекты</a></li>
+                    <li><a href="#faq">Вопросы</a></li>
+                    <li><a href="#contact">Контакты</a></li>
+                </ul>
+
+                <!-- Phone desktop -->
+                <a href="tel:+74951234567" class="nav-phone-btn d-none d-lg-inline-flex">
+                    <i class="fas fa-phone-alt"></i> <span>+7 (495) 123-45-67</span>
+                </a>
+
+                <!-- Phone tablet/mobile compact -->
+                <a href="tel:+74951234567" class="nav-phone-btn d-inline-flex d-lg-none" aria-label="Позвонить">
+                    <i class="fas fa-phone-alt"></i>
+                </a>
+
+                <!-- Burger для мобильных -->
+                <button class="btn-burger d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#mobileMenu" aria-controls="mobileMenu" aria-label="Открыть меню">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ============================================================
+         MOBILE OFFCANVAS MENU
+         ============================================================ -->
+    <div class="offcanvas offcanvas-end offcanvas-mobile" tabindex="-1" id="mobileMenu" aria-labelledby="mobileMenuLabel">
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title text-uppercase" id="mobileMenuLabel" style="letter-spacing:5px; font-weight:900; color:var(--white); margin:0;">
+                КД<span style="color:var(--mid-gray); font-weight:300;">АСТР</span>
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Закрыть"></button>
+        </div>
+        <div class="offcanvas-body d-flex flex-column">
+            <nav aria-label="Мобильная навигация">
+                <a href="#services" class="mobile-nav-link" data-bs-dismiss="offcanvas">Услуги <i class="fas fa-arrow-right"></i></a>
+                <a href="#process" class="mobile-nav-link" data-bs-dismiss="offcanvas">Процесс <i class="fas fa-arrow-right"></i></a>
+                <a href="#portfolio" class="mobile-nav-link" data-bs-dismiss="offcanvas">Проекты <i class="fas fa-arrow-right"></i></a>
+                <a href="#faq" class="mobile-nav-link" data-bs-dismiss="offcanvas">Вопросы <i class="fas fa-arrow-right"></i></a>
+                <a href="#contact" class="mobile-nav-link" data-bs-dismiss="offcanvas">Контакты <i class="fas fa-arrow-right"></i></a>
+            </nav>
+
+            <div class="mobile-contact mt-auto">
+                <a href="tel:+74951234567" class="mobile-phone">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>+7 (495) 123-45-67</span>
+                </a>
+                <a href="mailto:info@kdastr.ru" class="mobile-phone">
+                    <i class="fas fa-envelope"></i>
+                    <span>info@kdastr.ru</span>
+                </a>
+
+                <div class="mobile-social">
+                    <a href="#" aria-label="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="VK"><i class="fab fa-vk"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MAIN CONTENT
+         ============================================================ -->
+    <main>
+        <!-- HERO -->
+        <section class="hero">
+            <div class="container-fluid custom-container">
+                <div class="row align-items-center g-4 g-lg-5">
+                    <div class="col-12 col-lg-7 hero-left">
+                        <div class="hero-badge">Кадастровые работы · Геодезия · Дизайн</div>
+                        <h1>
+                            Точность в каждом<br>
+                            <span class="accent">квадратном метре</span>
+                        </h1>
+                        <p class="hero-desc">
+                            Профессиональные кадастровые услуги с безупречным дизайном.
+                            Мы превращаем сложные бюрократические процедуры в эстетичный
+                            и понятный процесс. Более 12 лет опыта и 4 800 успешных проектов.
+                        </p>
+                        <div class="hero-buttons">
+                            <a href="#contact" class="btn-custom btn-custom-primary">
+                                <i class="fas fa-arrow-right"></i> Бесплатная консультация
+                            </a>
+                            <a href="#services" class="btn-custom btn-custom-outline">
+                                <i class="fas fa-layer-group"></i> Наши услуги
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-5 hero-right">
+                        <div class="hero-stats">
+                            <div class="stat-card">
+                                <div class="stat-number" data-count="12" data-suffix="+">0</div>
+                                <div class="stat-label">лет на рынке кадастровых услуг</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" data-count="4800">0</div>
+                                <div class="stat-label">успешно завершённых проектов</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" data-count="98" data-suffix="%">0</div>
+                                <div class="stat-label">клиентов возвращаются снова</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MARQUEE -->
+        <div class="marquee" aria-hidden="true">
+            <div class="marquee-content">
+                <span class="marquee-item"><i class="fas fa-circle"></i> Межевание</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Технический план</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Геодезия</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Дизайн проект</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Кадастровый учёт</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Выписки ЕГРН</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Межевание</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Технический план</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Геодезия</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Дизайн проект</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Кадастровый учёт</span>
+                <span class="marquee-item"><i class="fas fa-circle"></i> Выписки ЕГРН</span>
+            </div>
+        </div>
+
+        <!-- SERVICES -->
+        <section id="services">
+            <div class="container-fluid custom-container">
+                <div class="section-header reveal">
+                    <div class="row align-items-end g-3">
+                        <div class="col-12 col-lg-7">
+                            <div class="section-tag">Наши услуги</div>
+                            <h2 class="section-title">Что мы <span class="thin">делаем</span></h2>
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            <p class="section-desc mb-0">
+                                Полный спектр кадастровых, геодезических и дизайнерских услуг
+                                под ключ. Работаем с физическими и юридическими лицами.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-draw-polygon"></i></div>
+                            <h3>Межевание участков</h3>
+                            <p>Установление границ земельных участков с высокой точностью. Геодезическая съёмка, подготовка межевого плана, согласование с соседями и постановка на учёт.</p>
+                            <div class="service-price"><span>от</span><strong>12 000 ₽</strong></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-file-alt"></i></div>
+                            <h3>Технический план</h3>
+                            <p>Изготовление технических планов на здания, сооружения, помещения и объекты незавершённого строительства. Постановка на кадастровый учёт.</p>
+                            <div class="service-price"><span>от</span><strong>8 000 ₽</strong></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-ruler-combined"></i></div>
+                            <h3>Дизайн проект</h3>
+                            <p>Авторский дизайн интерьеров и экстерьеров с учётом кадастровых особенностей объекта. Визуализация, чертежи, подбор материалов.</p>
+                            <div class="service-price"><span>от</span><strong>1 500 ₽/м²</strong></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-map-marked-alt"></i></div>
+                            <h3>Геодезические работы</h3>
+                            <p>Топографическая съёмка, вынос границ в натуру, исполнительная съёмка, контрольные измерения. Современное оборудование Leica и Trimble.</p>
+                            <div class="service-price"><span>от</span><strong>10 000 ₽</strong></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-file-signature"></i></div>
+                            <h3>Выписки ЕГРН</h3>
+                            <p>Получение выписок из Единого государственного реестра недвижимости любого типа. Срочный заказ от 1 часа, электронная подпись.</p>
+                            <div class="service-price"><span>от</span><strong>350 ₽</strong></div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-gavel"></i></div>
+                            <h3>Судебная экспертиза</h3>
+                            <p>Кадастровая экспертиза для судебных разбирательств. Определение границ, наложений, площади. Заключение для суда любой инстанции.</p>
+                            <div class="service-price"><span>от</span><strong>25 000 ₽</strong></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROCESS -->
+        <section id="process">
+            <div class="container-fluid custom-container">
+                <div class="section-header reveal">
+                    <div class="row align-items-end g-3">
+                        <div class="col-12 col-lg-7">
+                            <div class="section-tag">Как мы работаем</div>
+                            <h2 class="section-title">Процесс <span class="thin">работы</span></h2>
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            <p class="section-desc mb-0">
+                                Прозрачный процесс от заявки до получения готовых документов.
+                                Вы всегда знаете, на каком этапе находится ваш проект.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-sm-6 col-lg-3 reveal">
+                        <div class="process-step">
+                            <h4>Заявка и консультация</h4>
+                            <p>Оставьте заявку — мы свяжемся в течение 15 минут, обсудим задачу и рассчитаем стоимость.</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 reveal">
+                        <div class="process-step">
+                            <h4>Договор и предоплата</h4>
+                            <p>Заключаем официальный договор, фиксируем сроки и стоимость. Предоплата 30%.</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 reveal">
+                        <div class="process-step">
+                            <h4>Выезд и работы</h4>
+                            <p>Наш специалист выезжает на объект, выполняет измерения, готовит документацию.</p>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-3 reveal">
+                        <div class="process-step">
+                            <h4>Результат и оплата</h4>
+                            <p>Передаём готовые документы, вы оплачиваете остаток. Гарантия на все работы — 3 года.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ADVANTAGES -->
+        <section id="advantages">
+            <div class="container-fluid custom-container">
+                <div class="row g-5 align-items-center">
+                    <div class="col-12 col-lg-5 advantages-left reveal">
+                        <div class="section-tag">Преимущества</div>
+                        <h2 class="section-title">Почему <span class="thin">выбирают нас</span></h2>
+                        <p>
+                            Мы объединили техническую точность кадастровых инженеров
+                            и эстетику профессиональных дизайнеров. Результат —
+                            документы, которые не стыдно показать, и проекты,
+                            которые радуют глаз.
+                        </p>
+                        <a href="#contact" class="btn-custom btn-custom-outline">
+                            <i class="fas fa-comments"></i> Получить консультацию
+                        </a>
+                    </div>
+                    <div class="col-12 col-lg-7">
+                        <div class="adv-item reveal">
+                            <div class="adv-num">01</div>
+                            <div class="adv-body">
+                                <h4>Безупречная точность</h4>
+                                <p>Современное оборудование Leica и Trimble, многолетний опыт гарантируют отсутствие ошибок в документах.</p>
+                            </div>
+                        </div>
+                        <div class="adv-item reveal">
+                            <div class="adv-num">02</div>
+                            <div class="adv-body">
+                                <h4>Дизайн как часть услуги</h4>
+                                <p>Каждый документ и проект оформлен эстетично — от чертежей до презентации для клиента.</p>
+                            </div>
+                        </div>
+                        <div class="adv-item reveal">
+                            <div class="adv-num">03</div>
+                            <div class="adv-body">
+                                <h4>Сроки и прозрачность</h4>
+                                <p>Фиксированные сроки в договоре, онлайн-отчётность и полное сопровождение на всех этапах.</p>
+                            </div>
+                        </div>
+                        <div class="adv-item reveal">
+                            <div class="adv-num">04</div>
+                            <div class="adv-body">
+                                <h4>Гарантия результата</h4>
+                                <p>3 года гарантии на все кадастровые работы. Если что-то пойдёт не так — исправим за свой счёт.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PORTFOLIO -->
+        <section id="portfolio">
+            <div class="container-fluid custom-container">
+                <div class="section-header reveal">
+                    <div class="row align-items-end g-3">
+                        <div class="col-12 col-lg-7">
+                            <div class="section-tag">Портфолио</div>
+                            <h2 class="section-title">Наши <span class="thin">проекты</span></h2>
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            <p class="section-desc mb-0">
+                                Более 4 800 выполненных работ. От частных домов
+                                до крупных промышленных объектов и жилых комплексов.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-sm-6 col-lg-4 reveal">
+                        <div class="portfolio-item">
+                            <div class="portfolio-bg" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect width=%22400%22 height=%22300%22 fill=%22%232A2A2A%22/><circle cx=%22200%22 cy=%22150%22 r=%2290%22 fill=%22%233D3D3D%22 opacity=%220.7%22/><rect x=%22120%22 y=%22180%22 width=%22160%22 height=%2280%22 fill=%22%23D3D3D3%22 opacity=%220.15%22/></svg>');"></div>
+                            <div class="portfolio-inner">
+                                <div class="portfolio-content">
+                                    <h4>ЖК «Северный парк»</h4>
+                                    <span>Межевание · 12 Га · Москва</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 reveal">
+                        <div class="portfolio-item">
+                            <div class="portfolio-bg" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect width=%22400%22 height=%22300%22 fill=%22%232A2A2A%22/><polygon points=%22100,250 200,80 300,250%22 fill=%22%233D3D3D%22 opacity=%220.6%22/></svg>');"></div>
+                            <div class="portfolio-inner">
+                                <div class="portfolio-content">
+                                    <h4>Коттеджный посёлок «Лесной»</h4>
+                                    <span>Технические планы · 48 домов</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 reveal">
+                        <div class="portfolio-item">
+                            <div class="portfolio-bg" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect width=%22400%22 height=%22300%22 fill=%22%232A2A2A%22/><rect x=%2280%22 y=%22100%22 width=%22240%22 height=%22120%22 rx=%2220%22 fill=%22%233D3D3D%22 opacity=%220.6%22/></svg>');"></div>
+                            <div class="portfolio-inner">
+                                <div class="portfolio-content">
+                                    <h4>Ресторан «Гранат»</h4>
+                                    <span>Дизайн проект · 320 м²</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 reveal">
+                        <div class="portfolio-item">
+                            <div class="portfolio-bg" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect width=%22400%22 height=%22300%22 fill=%22%232A2A2A%22/><circle cx=%22200%22 cy=%22150%22 r=%22120%22 fill=%22none%22 stroke=%22%233D3D3D%22 stroke-width=%222%22 opacity=%220.7%22/><circle cx=%22200%22 cy=%22150%22 r=%2270%22 fill=%22none%22 stroke=%22%23D3D3D3%22 stroke-width=%221%22 opacity=%220.25%22/></svg>');"></div>
+                            <div class="portfolio-inner">
+                                <div class="portfolio-content">
+                                    <h4>Складской комплекс «Восток»</h4>
+                                    <span>Геодезия · 8 000 м²</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 reveal">
+                        <div class="portfolio-item">
+                            <div class="portfolio-bg" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect width=%22400%22 height=%22300%22 fill=%22%232A2A2A%22/><path d=%22M50 250 Q200 50 350 250%22 fill=%22none%22 stroke=%22%233D3D3D%22 stroke-width=%222%22 opacity=%220.7%22/></svg>');"></div>
+                            <div class="portfolio-inner">
+                                <div class="portfolio-content">
+                                    <h4>Отель «Альпийский»</h4>
+                                    <span>Дизайн · 4 200 м²</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-sm-6 col-lg-4 reveal">
+                        <div class="portfolio-item">
+                            <div class="portfolio-bg" style="background-image: url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22300%22><rect width=%22400%22 height=%22300%22 fill=%22%232A2A2A%22/><line x1=%220%22 y1=%22300%22 x2=%22400%22 y2=%220%22 stroke=%22%233D3D3D%22 stroke-width=%222%22 opacity=%220.6%22/></svg>');"></div>
+                            <div class="portfolio-inner">
+                                <div class="portfolio-content">
+                                    <h4>Бизнес-центр «Меридиан»</h4>
+                                    <span>Кадастровый учёт · 15 000 м²</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- TESTIMONIALS -->
+        <section id="testimonials">
+            <div class="container-fluid custom-container">
+                <div class="section-header reveal">
+                    <div class="row align-items-end g-3">
+                        <div class="col-12 col-lg-7">
+                            <div class="section-tag">Отзывы</div>
+                            <h2 class="section-title">Что говорят <span class="thin">клиенты</span></h2>
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            <p class="section-desc mb-0">
+                                Более 98% клиентов возвращаются к нам снова
+                                и рекомендуют нас своим знакомым.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="testimonial">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <p class="testimonial-text">
+                                «Заказывали межевание участка в Подмосковье. Всё сделали быстро,
+                                аккуратно и с потрясающим оформлением документов.
+                                Отдельное спасибо за дизайн презентации!»
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">АК</div>
+                                <div class="testimonial-author-info">
+                                    <h5>Алексей Кузнецов</h5>
+                                    <span>Частный дом, Московская область</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="testimonial">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <p class="testimonial-text">
+                                «Сотрудничаем уже третий год. За это время выполнено более
+                                20 технических планов для наших объектов. Всегда в срок,
+                                всегда безупречно. Рекомендую как надёжного партнёра.»
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">МС</div>
+                                <div class="testimonial-author-info">
+                                    <h5>Марина Соколова</h5>
+                                    <span>Директор строительной компании</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 col-lg-4 reveal">
+                        <div class="testimonial">
+                            <div class="testimonial-stars">★★★★★</div>
+                            <p class="testimonial-text">
+                                «Дизайн проект квартиры превзошёл все ожидания. Учли
+                                все кадастровые нюансы, сделали перепланировку
+                                и узаконили её. Спасибо за профессионализм!»
+                            </p>
+                            <div class="testimonial-author">
+                                <div class="testimonial-avatar">ДВ</div>
+                                <div class="testimonial-author-info">
+                                    <h5>Дмитрий Волков</h5>
+                                    <span>Квартира в новостройке</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ -->
+        <section id="faq">
+            <div class="container-fluid custom-container">
+                <div class="section-header reveal">
+                    <div class="row align-items-end g-3">
+                        <div class="col-12 col-lg-7">
+                            <div class="section-tag">Вопросы и ответы</div>
+                            <h2 class="section-title">Частые <span class="thin">вопросы</span></h2>
+                        </div>
+                        <div class="col-12 col-lg-5">
+                            <p class="section-desc mb-0">
+                                Не нашли ответ? Свяжитесь с нами — ответим
+                                в течение 15 минут в рабочее время.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-12 col-lg-6 reveal">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <h4>Сколько времени занимает межевание участка?</h4>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Стандартный срок — от 7 до 14 рабочих дней с момента заключения договора. Срочное межевание — от 3 дней. Точный срок зависит от площади участка и наличия необходимых документов.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 reveal">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <h4>Какие документы нужны для технического плана?</h4>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Потребуются: паспорт собственника, правоустанавливающие документы на объект, технический паспорт (при наличии), выписка из ЕГРН. Полный список мы предоставим после первичной консультации.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 reveal">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <h4>Работаете ли вы с юридическими лицами?</h4>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Да, мы работаем с физическими и юридическими лицами, а также с государственными организациями. Для юридических лиц предусмотрены специальные условия и отсрочка платежа.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 reveal">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <h4>Что входит в дизайн проект?</h4>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>В дизайн проект входит: обмерный план, планировочное решение, 3D-визуализация, рабочие чертежи, ведомость отделки, подбор мебели и освещения. При необходимости — авторский надзор.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 reveal">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <h4>Есть ли гарантия на кадастровые работы?</h4>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Да, мы предоставляем гарантию 3 года на все кадастровые работы. Если по нашей вине возникнут ошибки — исправим бесплатно и в кратчайшие сроки.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 reveal">
+                        <div class="faq-item" onclick="toggleFaq(this)">
+                            <div class="faq-question">
+                                <h4>Можно ли заказать услуги онлайн?</h4>
+                                <i class="fas fa-plus"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Да, большинство услуг можно заказать дистанционно. Мы работаем по всей России. Документы подписываются электронной подписью, а готовый результат вы получаете на email или в личном кабинете.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA -->
+        <section class="cta-section reveal">
+            <div class="container-fluid custom-container">
+                <h2>
+                    Готовы начать<br>
+                    <span class="thin">свой проект?</span>
+                </h2>
+                <p>
+                    Оставьте заявку — обсудим ваш проект, рассчитаем стоимость
+                    и предложим оптимальное решение. Консультация бесплатна.
+                </p>
+                <div class="d-flex flex-wrap gap-3 justify-content-center">
+                    <a href="#contact" class="btn-custom btn-custom-primary">
+                        <i class="fas fa-paper-plane"></i> Оставить заявку
+                    </a>
+                    <a href="tel:+74951234567" class="btn-custom btn-custom-outline">
+                        <i class="fas fa-phone-alt"></i> Позвонить сейчас
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT -->
+        <section id="contact">
+            <div class="container-fluid custom-container">
+                <div class="row g-5">
+                    <div class="col-12 col-lg-5 contact-info reveal">
+                        <div class="section-tag">Контакты</div>
+                        <h3>Свяжитесь с нами</h3>
+                        <p>
+                            Мы на связи с понедельника по пятницу с 9:00 до 20:00,
+                            в субботу — с 10:00 до 18:00. Отвечаем на заявки
+                            в течение 15 минут.
+                        </p>
+                        <a href="tel:+74951234567" class="contact-detail">
+                            <i class="fas fa-phone-alt"></i>
+                            <div class="contact-detail-text">
+                                <h5>+7 (495) 123-45-67</h5>
+                                <span>Звоните с 9:00 до 20:00</span>
+                            </div>
+                        </a>
+                        <a href="mailto:info@kdastr.ru" class="contact-detail">
+                            <i class="fas fa-envelope"></i>
+                            <div class="contact-detail-text">
+                                <h5>info@kdastr.ru</h5>
+                                <span>Ответим в течение часа</span>
+                            </div>
+                        </a>
+                        <div class="contact-detail">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <div class="contact-detail-text">
+                                <h5>Москва, ул. Тверская, 18, офис 405</h5>
+                                <span>БЦ «Гранит», 4 этаж</span>
+                            </div>
+                        </div>
+                        <div class="contact-detail">
+                            <i class="fas fa-clock"></i>
+                            <div class="contact-detail-text">
+                                <h5>Пн–Пт: 9:00 – 20:00</h5>
+                                <span>Сб: 10:00 – 18:00 · Вс: выходной</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-lg-7 reveal">
+                        <form class="contact-form" id="leadForm" novalidate>
+                            <h4>Оставить заявку</h4>
+                            <div class="row g-3">
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label-custom" for="name">Ваше имя *</label>
+                                    <input type="text" class="form-control-custom" id="name" name="name" placeholder="Иван Иванов" required autocomplete="name">
+                                </div>
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label-custom" for="phone">Телефон *</label>
+                                    <input type="tel" class="form-control-custom" id="phone" name="phone" placeholder="+7 (___) ___-__-__" required autocomplete="tel">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-custom" for="email">Email</label>
+                                    <input type="email" class="form-control-custom" id="email" name="email" placeholder="ivan@example.com" autocomplete="email">
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-custom" for="service">Услуга</label>
+                                    <select class="form-control-custom" id="service" name="service">
+                                        <option value="">Выберите услугу</option>
+                                        <option>Межевание участка</option>
+                                        <option>Технический план</option>
+                                        <option>Дизайн проект</option>
+                                        <option>Геодезические работы</option>
+                                        <option>Выписка ЕГРН</option>
+                                        <option>Судебная экспертиза</option>
+                                        <option>Другое</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label-custom" for="message">Комментарий</label>
+                                    <textarea class="form-control-custom" id="message" name="message" placeholder="Опишите вашу задачу..."></textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="submit" class="btn-custom btn-custom-primary w-100">
+                                        <i class="fas fa-paper-plane"></i> Отправить заявку
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ============================================================
+         FOOTER
+         ============================================================ -->
+    <footer class="footer">
+        <div class="container-fluid custom-container">
+            <div class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-4">
+                <div class="d-flex flex-column flex-md-row align-items-center gap-3 gap-md-4 text-center text-md-start">
+                    <div class="footer-logo">КД<span>АСТР</span></div>
+                    <div class="footer-copy">© 2025 Все права защищены</div>
+                </div>
+                <div class="footer-social d-flex gap-2 gap-md-3 flex-wrap justify-content-center">
+                    <a href="#" aria-label="Telegram" title="Telegram"><i class="fab fa-telegram-plane"></i></a>
+                    <a href="#" aria-label="WhatsApp" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+                    <a href="#" aria-label="Instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="#" aria-label="VK" title="VK"><i class="fab fa-vk"></i></a>
+                    <a href="#" aria-label="YouTube" title="YouTube"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5.3 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        /* ============================================================
+           ИНИЦИАЛИЗАЦИЯ
+           ============================================================ */
+        document.body.classList.remove('no-js');
+
+        (function() {
+            'use strict';
+
+            const isTouch = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            const isDesktop = window.matchMedia('(min-width: 1025px)').matches;
+
+            /* ============================================================
+               1. КУРСОР (desktop, non-touch, non-reduced)
+               ============================================================ */
+            if (!isTouch && !prefersReducedMotion) {
+                const cursorDot = document.querySelector('.cursor-dot');
+                const cursorRing = document.querySelector('.cursor-ring');
+                let mouseX = window.innerWidth / 2;
+                let mouseY = window.innerHeight / 2;
+                let ringX = mouseX;
+                let ringY = mouseY;
+
+                window.addEventListener('mousemove', (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    if (cursorDot) {
+                        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+                    }
+                }, { passive: true });
+
+                function animateRing() {
+                    ringX += (mouseX - ringX) * 0.15;
+                    ringY += (mouseY - ringY) * 0.15;
+                    if (cursorRing) {
+                        cursorRing.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+                    }
+                    requestAnimationFrame(animateRing);
+                }
+                animateRing();
+
+                const hoverTargets = 'a, button, .service-card, .portfolio-item, .faq-item, .stat-card, .adv-item, input, textarea, select, .btn-custom';
+                document.querySelectorAll(hoverTargets).forEach(el => {
+                    el.addEventListener('mouseenter', () => document.body.classList.add('cursor-hover'));
+                    el.addEventListener('mouseleave', () => document.body.classList.remove('cursor-hover'));
+                });
+            }
+
+            /* ============================================================
+               2. МАГНИТНЫЙ ФОН
+               ============================================================ */
+            const bgGlow = document.querySelector('.bg-glow');
+            if (bgGlow && !isTouch && !prefersReducedMotion) {
+                let bgTargetX = 0, bgTargetY = 0;
+                let bgCurrentX = 0, bgCurrentY = 0;
+                let bgRafId = null;
+
+                window.addEventListener('mousemove', (e) => {
+                    bgTargetX = (e.clientX / window.innerWidth - 0.5) * 80;
+                    bgTargetY = (e.clientY / window.innerHeight - 0.5) * 80;
+                    if (!bgRafId) bgRafId = requestAnimationFrame(updateBg);
+                }, { passive: true });
+
+                function updateBg() {
+                    bgCurrentX += (bgTargetX - bgCurrentX) * 0.08;
+                    bgCurrentY += (bgTargetY - bgCurrentY) * 0.08;
+                    bgGlow.style.transform = `translate(calc(-50% + ${bgCurrentX}px), calc(-50% + ${bgCurrentY}px))`;
+                    if (Math.abs(bgTargetX - bgCurrentX) > 0.1 || Math.abs(bgTargetY - bgCurrentY) > 0.1) {
+                        bgRafId = requestAnimationFrame(updateBg);
+                    } else {
+                        bgRafId = null;
+                    }
+                }
+            }
+
+            /* ============================================================
+               3. SCROLL PROGRESS
+               ============================================================ */
+            const scrollProgress = document.querySelector('.scroll-progress');
+            if (scrollProgress) {
+                let ticking = false;
+                window.addEventListener('scroll', () => {
+                    if (!ticking) {
+                        requestAnimationFrame(() => {
+                            const max = document.documentElement.scrollHeight - window.innerHeight;
+                            const scrolled = max > 0 ? (window.scrollY / max) * 100 : 0;
+                            scrollProgress.style.width = scrolled + '%';
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                }, { passive: true });
+            }
+
+            /* ============================================================
+               4. ЧАСТИЦЫ
+               ============================================================ */
+            const canvas = document.getElementById('particle-canvas');
+            if (canvas && !prefersReducedMotion) {
+                const ctx = canvas.getContext('2d');
+                let width, height;
+                let particles = [];
+                const isMobile = window.innerWidth < 768;
+                const PARTICLE_COUNT = isMobile ? 35 : 85;
+                let canvasRafId = null;
+
+                function initCanvas() {
+                    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+                    width = window.innerWidth;
+                    height = window.innerHeight;
+                    canvas.width = width * dpr;
+                    canvas.height = height * dpr;
+                    canvas.style.width = width + 'px';
+                    canvas.style.height = height + 'px';
+                    ctx.setTransform(1, 0, 0, 1, 0, 0);
+                    ctx.scale(dpr, dpr);
+                }
+
+                class Particle {
+                    constructor() { this.reset(); }
+                    reset() {
+                        this.x = Math.random() * width;
+                        this.y = Math.random() * height;
+                        this.size = Math.random() * 2 + 0.5;
+                        this.speedX = (Math.random() - 0.5) * 0.4;
+                        this.speedY = (Math.random() - 0.5) * 0.4;
+                        this.opacity = Math.random() * 0.4 + 0.15;
+                    }
+                    update() {
+                        this.x += this.speedX;
+                        this.y += this.speedY;
+                        if (this.x < -10) this.x = width + 10;
+                        if (this.x > width + 10) this.x = -10;
+                        if (this.y < -10) this.y = height + 10;
+                        if (this.y > height + 10) this.y = -10;
+                    }
+                    draw() {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = `rgba(211, 211, 211, ${this.opacity})`;
+                        ctx.fill();
+                    }
+                }
+
+                function createParticles() {
+                    particles = [];
+                    for (let i = 0; i < PARTICLE_COUNT; i++) particles.push(new Particle());
+                }
+
+                function animateParticles() {
+                    ctx.clearRect(0, 0, width, height);
+                    ctx.strokeStyle = 'rgba(211, 211, 211, 0.05)';
+                    ctx.lineWidth = 0.6;
+
+                    for (let i = 0; i < particles.length; i++) {
+                        for (let j = i + 1; j < particles.length; j++) {
+                            const dx = particles[i].x - particles[j].x;
+                            const dy = particles[i].y - particles[j].y;
+                            const dist2 = dx * dx + dy * dy;
+                            if (dist2 < 160 * 160) {
+                                ctx.beginPath();
+                                ctx.moveTo(particles[i].x, particles[i].y);
+                                ctx.lineTo(particles[j].x, particles[j].y);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+                    particles.forEach(p => { p.update(); p.draw(); });
+                    canvasRafId = requestAnimationFrame(animateParticles);
+                }
+
+                initCanvas();
+                createParticles();
+                animateParticles();
+
+                let resizeTimer;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimer);
+                    resizeTimer = setTimeout(() => {
+                        initCanvas();
+                        createParticles();
+                    }, 200);
+                });
+
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        if (canvasRafId) { cancelAnimationFrame(canvasRafId); canvasRafId = null; }
+                    } else if (!canvasRafId) {
+                        animateParticles();
+                    }
+                });
+            }
+
+            /* ============================================================
+               5. SCROLL REVEAL
+               ============================================================ */
+            const revealElements = document.querySelectorAll('.reveal');
+            if ('IntersectionObserver' in window) {
+                const revealObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            revealObserver.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.08, rootMargin: '0px 0px -50px 0px' });
+
+                revealElements.forEach(el => revealObserver.observe(el));
+            } else {
+                revealElements.forEach(el => el.classList.add('visible'));
+            }
+
+            /* ============================================================
+               6. FAQ
+               ============================================================ */
+            window.toggleFaq = function(el) {
+                if (!el) return;
+                const isOpen = el.classList.contains('open');
+                document.querySelectorAll('.faq-item.open').forEach(item => {
+                    if (item !== el) item.classList.remove('open');
+                });
+                el.classList.toggle('open', !isOpen);
+            };
+
+            /* ============================================================
+               7. SMOOTH SCROLL
+               ============================================================ */
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href === '#' || href.length < 2) return;
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        const headerOffset = 20;
+                        const top = target.getBoundingClientRect().top + window.pageYOffset - headerOffset;
+                        window.scrollTo({ top, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            /* ============================================================
+               8. 3D TILT — только desktop
+               ============================================================ */
+            if (!isTouch && !prefersReducedMotion && isDesktop) {
+                document.querySelectorAll('.service-card').forEach(card => {
+                    let rect;
+                    card.addEventListener('mouseenter', () => { rect = card.getBoundingClientRect(); });
+                    card.addEventListener('mousemove', (e) => {
+                        if (!rect) rect = card.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const rotX = (y - rect.height / 2) / 30;
+                        const rotY = (rect.width / 2 - x) / 30;
+                        card.style.setProperty('--mx', x + 'px');
+                        card.style.setProperty('--my', y + 'px');
+                        card.style.transform = `translateY(-10px) perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                    });
+                    card.addEventListener('mouseleave', () => {
+                        card.style.transform = '';
+                        rect = null;
+                    });
+                });
+
+                document.querySelectorAll('.portfolio-item').forEach(item => {
+                    let rect;
+                    item.addEventListener('mouseenter', () => { rect = item.getBoundingClientRect(); });
+                    item.addEventListener('mousemove', (e) => {
+                        if (!rect) rect = item.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const rotX = (y - rect.height / 2) / 40;
+                        const rotY = (rect.width / 2 - x) / 40;
+                        item.style.transform = `scale(1.02) perspective(1100px) rotateX(${rotX}deg) rotateY(${rotY}deg)`;
+                    });
+                    item.addEventListener('mouseleave', () => {
+                        item.style.transform = '';
+                        rect = null;
+                    });
+                });
+
+                document.querySelectorAll('.btn-custom').forEach(btn => {
+                    btn.addEventListener('mousemove', (e) => {
+                        const rect = btn.getBoundingClientRect();
+                        const x = e.clientX - rect.left - rect.width / 2;
+                        const y = e.clientY - rect.top - rect.height / 2;
+                        btn.style.transform = `translate(${x * 0.12}px, ${y * 0.2}px) scale(1.03)`;
+                    });
+                    btn.addEventListener('mouseleave', () => {
+                        btn.style.transform = '';
+                    });
+                });
+            }
+
+            /* ============================================================
+               9. СЧЁТЧИКИ ЦИФР
+               ============================================================ */
+            const counters = document.querySelectorAll('.stat-number[data-count]');
+            let countersStarted = false;
+
+            function animateCounters() {
+                if (countersStarted) return;
+                countersStarted = true;
+                counters.forEach(counter => {
+                    const target = parseInt(counter.getAttribute('data-count'), 10);
+                    const suffix = counter.getAttribute('data-suffix') || '';
+                    if (isNaN(target)) return;
+                    const duration = 1800;
+                    const start = performance.now();
+
+                    function tick(now) {
+                        const progress = Math.min((now - start) / duration, 1);
+                        const eased = 1 - Math.pow(1 - progress, 3);
+                        const current = Math.floor(target * eased);
+                        counter.textContent = current.toLocaleString('ru-RU') + suffix;
+                        if (progress < 1) requestAnimationFrame(tick);
+                    }
+                    requestAnimationFrame(tick);
+                });
+            }
+
+            if ('IntersectionObserver' in window && counters.length) {
+                const statsObserver = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            animateCounters();
+                            statsObserver.disconnect();
+                        }
+                    });
+                }, { threshold: 0.3 });
+                const heroStats = document.querySelector('.hero-stats');
+                if (heroStats) statsObserver.observe(heroStats);
+            } else {
+                animateCounters();
+            }
+
+            /* ============================================================
+               10. ПАРАЛЛАКС HERO (только desktop)
+               ============================================================ */
+            if (!isTouch && !prefersReducedMotion && isDesktop) {
+                const heroLeft = document.querySelector('.hero-left');
+                const heroRight = document.querySelector('.hero-right');
+                let scrollTicking = false;
+
+                window.addEventListener('scroll', () => {
+                    if (!scrollTicking) {
+                        requestAnimationFrame(() => {
+                            const scrolled = window.scrollY;
+                            if (scrolled < window.innerHeight && scrolled < 900) {
+                                if (heroLeft) heroLeft.style.transform = `translateY(${scrolled * 0.1}px)`;
+                                if (heroRight) heroRight.style.transform = `translateY(${scrolled * 0.05}px)`;
+                            }
+                            scrollTicking = false;
+                        });
+                        scrollTicking = true;
+                    }
+                }, { passive: true });
+            }
+
+            /* ============================================================
+               11. ФОРМА
+               ============================================================ */
+            const leadForm = document.getElementById('leadForm');
+            if (leadForm) {
+                leadForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const name = this.querySelector('#name');
+                    const phone = this.querySelector('#phone');
+
+                    let valid = true;
+                    [name, phone].forEach(field => {
+                        if (!field.value.trim()) {
+                            field.style.borderColor = '#ff5555';
+                            valid = false;
+                            setTimeout(() => { field.style.borderColor = ''; }, 2500);
+                        }
+                    });
+
+                    if (!valid) {
+                        alert('Пожалуйста, заполните обязательные поля: имя и телефон.');
+                        return;
+                    }
+
+                    const btn = this.querySelector('button[type="submit"]');
+                    const originalHTML = btn.innerHTML;
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Отправка...';
+
+                    setTimeout(() => {
+                        btn.innerHTML = '<i class="fas fa-check"></i> Заявка отправлена!';
+                        setTimeout(() => {
+                            btn.disabled = false;
+                            btn.innerHTML = originalHTML;
+                            leadForm.reset();
+                            alert('Спасибо! Ваша заявка принята. Мы свяжемся с вами в течение 15 минут.');
+                        }, 1200);
+                    }, 900);
+                });
+            }
+
+            /* ============================================================
+               12. RESIZE — сброс transforms
+               ============================================================ */
+            let resizeDebounce;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeDebounce);
+                resizeDebounce = setTimeout(() => {
+                    document.querySelectorAll('.service-card, .portfolio-item, .btn-custom, .hero-left, .hero-right').forEach(el => {
+                        el.style.transform = '';
+                    });
+                }, 200);
+            });
+
+            /* ============================================================
+               13. BOOTSTRAP OFFCANVAS — закрытие при клике на ссылку
+               ============================================================ */
+            document.querySelectorAll('#mobileMenu a[href^="#"]').forEach(link => {
+                link.addEventListener('click', () => {
+                    const offcanvasEl = document.getElementById('mobileMenu');
+                    if (offcanvasEl) {
+                        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+                        if (bsOffcanvas) bsOffcanvas.hide();
+                    }
+                });
+            });
+
+            /* ============================================================
+               14. Отладка
+               ============================================================ */
+            console.log('%cКДАСТР', 'color:#fff; background:#1C1C1C; padding:4px 10px; font-weight:bold; letter-spacing:2px;');
+            console.log('✓ Bootstrap 5.3 подключён');
+            console.log('✓ Touch:', isTouch, '| Desktop:', isDesktop, '| Reduced:', prefersReducedMotion);
+            console.log('✓ Ширина экрана:', window.innerWidth + 'px');
+
+        })();
+    </script>
+</body>
+</html>
